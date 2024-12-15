@@ -9,6 +9,7 @@ import AdminLoginPage from "./AdminLoginPage"; // Your Admin login component
 import CategoryManager from "./CategoryManager";
 import MakeCategory from "./MakeCategory";
 import AdsManager from "./AdsManager";
+import Payments from "./Payments";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -62,6 +63,11 @@ const App = () => {
                 </Link>
               </li>
               <li style={styles.navItem}>
+                <Link to="/payments" style={styles.navLink}>
+                  Payments
+                </Link>
+              </li>
+              <li style={styles.navItem}>
                 <Link to="/ads-manager" style={styles.navLink}>
                   Ads
                 </Link>
@@ -91,6 +97,7 @@ const App = () => {
             <Route path="/user" element={<UserPage />} />
             <Route path="/discounts" element={<CreateDiscount />} />
             <Route path="/recommends" element={<RecommendPage />} />
+            <Route path="/payments" element={<Payments />} />
             <Route path="/reports" element={<ReportPage />} />
             <Route path="/categories" element={<CategoryManager />} />
             <Route path="/ads-manager" element={<AdsManager />} />
