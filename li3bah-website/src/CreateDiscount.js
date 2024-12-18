@@ -128,6 +128,7 @@ const createDiscount = observer(() => {
               <span>
                 Expires: {new Date(discount.expiry).toLocaleDateString()}
               </span>
+              <span>Uses: {discount.uses}</span>
               <button
                 style={styles.editButton}
                 onClick={() => handleEditDiscount(discount)}
