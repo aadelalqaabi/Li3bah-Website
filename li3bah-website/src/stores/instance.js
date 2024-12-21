@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const baseURL = "http://15.185.147.180:8000";
+const baseURL = "https://www.cotankw.com/api";
+//const baseURL = "http://localhost:8000/api/";
 
 const instance = axios.create({
   baseURL: baseURL,
