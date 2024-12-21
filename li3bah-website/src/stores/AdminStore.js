@@ -24,12 +24,17 @@ class AdminStore {
   checkForToken = () => {
     const token = localStorage.getItem("adminToken");
     if (token) {
-      const currentTime = Date.now();
-      const admin = jwtDecode(token);
-      if (admin.exp >= currentTime) {
-        this.setAdmin(token);
-      } else {
-        this.logout();
+      try {
+        const currentTime = Date.now() / 1000; // Convert milliseconds to seconds
+        const admin = jwtDecode(token);
+        if (admin.exp >= currentTime) {
+          this.setAdmin(token);
+        } else {
+          this.logout(); // Token expired
+        }
+      } catch (error) {
+        console.error("Invalid token:", error.message);
+        this.logout(); // Invalid token, log out the admin
       }
     }
   };

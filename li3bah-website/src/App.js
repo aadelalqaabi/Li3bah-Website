@@ -14,7 +14,6 @@ import Payments from "./Payments";
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
-
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
     if (!token) {
