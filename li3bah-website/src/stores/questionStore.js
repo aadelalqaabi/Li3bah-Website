@@ -27,7 +27,6 @@ class QuestionStore {
     }
   };
 
-  // Create a new question under a specific category
   createQuestion = async (formData, categoryID) => {
     try {
       const response = await instance.post(
@@ -39,9 +38,19 @@ class QuestionStore {
           },
         }
       );
-      this.questions.push(response.data); // Add new question to the list
+
+      // Check if response status is 201 (Created)
+      if (response.status === 201) {
+        console.log("Question created successfully:", response.data);
+        this.questions.push(response.data); // Add new question to the list
+        return { success: true, data: response.data }; // Return success response
+      } else {
+        console.error("Unexpected response status:", response.status);
+        return { success: false, error: "Unexpected response status" };
+      }
     } catch (error) {
       console.error("Failed to create question:", error);
+      return { success: false, error: error.response?.data || error.message };
     }
   };
 
