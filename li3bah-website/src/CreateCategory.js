@@ -83,19 +83,22 @@ const CreateCategory = () => {
   };
 
   const handleUpload = async () => {
-    setIsLoading(true); // Start loading
+    setIsLoading(true);
+    const totalQuestions = matchedData.length;
+    let uploadedCount = 0;
+    const failedUploads = []; // Track failed uploads
 
     for (let idx = 0; idx < matchedData.length; idx++) {
       const item = matchedData[idx];
       const formData = new FormData();
 
-      // Add text data
+      // Append question data
       formData.append("ask", item.questionText);
       formData.append("answer", item.answerText);
       formData.append("points", item.points);
       formData.append("free", item.free);
 
-      // Add image data separately to avoid conflicts
+      // Append images if available
       if (item.imageAsk) {
         formData.append("imageAsk", item.imageAsk, item.imageAsk.name);
       }
@@ -103,14 +106,35 @@ const CreateCategory = () => {
         formData.append("imageAnswer", item.imageAnswer, item.imageAnswer.name);
       }
 
-      // Send form data for each question
       try {
-        await questionStore.createQuestion(formData, categoryID);
+        const result = await questionStore.createQuestion(formData, categoryID);
+
+        if (result.success) {
+          uploadedCount++;
+          console.log(`Successfully uploaded question ${idx + 1}.`);
+        } else {
+          failedUploads.push({ ...item, error: result.error });
+          console.error(`Failed to upload question ${idx + 1}:`, result.error);
+        }
+
+        // Update progress in the UI
+        const progress = Math.round((uploadedCount / totalQuestions) * 100);
+        setIsLoading(`Uploading... ${progress}%`);
       } catch (error) {
-        console.error("Error uploading question:", error);
+        failedUploads.push({ ...item, error: error.message });
+        console.error(`Error uploading question ${idx + 1}:`, error);
       }
     }
-    alert("All questions have been uploaded successfully!");
+
+    if (failedUploads.length > 0) {
+      console.warn("Some questions failed to upload:", failedUploads);
+      alert(
+        `Failed to upload ${failedUploads.length} question(s). Please retry.`
+      );
+    } else {
+      alert("All questions uploaded successfully!");
+    }
+
     setIsLoading(false); // Stop loading
   };
 
@@ -271,7 +295,7 @@ const CreateCategory = () => {
       {matchedData.length > 0 && (
         <div style={styles.inputGroup}>
           {isLoading ? (
-            <div style={styles.loading}>Uploading, please wait...</div> // Loading message
+            <div style={styles.loading}>{isLoading}</div> // Show dynamic progress
           ) : (
             <button style={styles.button} onClick={handleUpload}>
               Submit and Upload
