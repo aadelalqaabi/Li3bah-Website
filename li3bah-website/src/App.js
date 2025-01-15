@@ -23,10 +23,12 @@ const App = () => {
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
 
-    // Only redirect unauthenticated users for admin-related paths
-    if (!token && window.location.pathname !== "/support") {
+    // Check if the current path is admin-related or not
+    const isAdminPath = !window.location.pathname.startsWith("/support");
+
+    if (!token && isAdminPath) {
       navigate("/login");
-    } else {
+    } else if (token || !isAdminPath) {
       setIsAuthenticated(true);
     }
   }, [navigate]);
