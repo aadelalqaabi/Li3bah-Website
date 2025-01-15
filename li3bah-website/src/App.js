@@ -10,7 +10,6 @@ import CategoryManager from "./CategoryManager";
 import MakeCategory from "./MakeCategory";
 import AdsManager from "./AdsManager";
 import Payments from "./Payments";
-import SupportForm from "./supportForm";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
