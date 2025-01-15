@@ -20,16 +20,16 @@ import Payments from "./Payments";
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
-
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
-    if (!token) {
-      navigate("/login"); // Redirect if not authenticated
+
+    // Only redirect unauthenticated users for admin-related paths
+    if (!token && window.location.pathname !== "/support") {
+      navigate("/login");
     } else {
-      setIsAuthenticated(true); // Set as authenticated if token exists
+      setIsAuthenticated(true);
     }
   }, [navigate]);
-
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     setIsAuthenticated(false);
