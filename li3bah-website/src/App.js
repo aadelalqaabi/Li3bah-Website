@@ -10,6 +10,7 @@ import CategoryManager from "./CategoryManager";
 import MakeCategory from "./MakeCategory";
 import AdsManager from "./AdsManager";
 import Payments from "./Payments";
+import SupportRequests from "./SupportRequests";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -82,6 +83,11 @@ const App = () => {
                 </Link>
               </li>
               <li style={styles.navItem}>
+                <Link to="/support" style={styles.navLink}>
+                  Support
+                </Link>
+              </li>
+              <li style={styles.navItem}>
                 <button onClick={handleLogout} style={styles.logoutButton}>
                   Logout
                 </button>
@@ -100,6 +106,7 @@ const App = () => {
             <Route path="/reports" element={<ReportPage />} />
             <Route path="/categories" element={<CategoryManager />} />
             <Route path="/ads-manager" element={<AdsManager />} />
+            <Route path="/support" element={<SupportRequests />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Routes>
         </>
