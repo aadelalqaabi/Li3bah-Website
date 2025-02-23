@@ -9,6 +9,9 @@ const CategoryManager = observer(() => {
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [editCategoryModalOpen, setEditCategoryModalOpen] = useState(false); // Category edit modal
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false); // 🚀 New delete modal
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
+
   const [categoryToPublish, setCategoryToPublish] = useState(null);
   const [questions, setQuestions] = useState(null);
 
@@ -40,6 +43,18 @@ const CategoryManager = observer(() => {
     const questions = await questionStore.fetchQuestionsByCategory(categoryId);
     // Now set the state with the resolved data
     setQuestions(questions);
+  };
+  const handleDeleteCategory = async () => {
+    if (categoryToDelete) {
+      await CategoryStore.deleteCategory(categoryToDelete._id);
+      setDeleteModalOpen(false);
+      setCategoryToDelete(null);
+    }
+  };
+
+  const openDeleteModal = (category) => {
+    setCategoryToDelete(category);
+    setDeleteModalOpen(true);
   };
 
   const openConfirmModal = (category) => {
@@ -143,7 +158,14 @@ const CategoryManager = observer(() => {
             />
             <h3>{category.name}</h3>
             <p>{category.description}</p>
-
+            <div style={styles.buttonGroup}>
+              <button
+                style={styles.button}
+                onClick={() => openDeleteModal(category)}
+              >
+                🗑️ Delete
+              </button>
+            </div>
             <div style={styles.buttonGroup}>
               <button
                 style={styles.button}
@@ -452,6 +474,28 @@ const CategoryManager = observer(() => {
             style={styles.deleteButton}
           >
             No
+          </button>
+        </Modal>
+      )}
+      {deleteModalOpen && (
+        <Modal
+          isOpen={deleteModalOpen}
+          onRequestClose={() => setDeleteModalOpen(false)}
+          contentLabel="Confirm Delete"
+        >
+          <h2>Confirm Deletion</h2>
+          <p>
+            Are you sure you want to delete this category? This action is
+            irreversible.
+          </p>
+          <button onClick={handleDeleteCategory} style={styles.deleteButton}>
+            Yes, Delete
+          </button>
+          <button
+            onClick={() => setDeleteModalOpen(false)}
+            style={styles.button}
+          >
+            Cancel
           </button>
         </Modal>
       )}
