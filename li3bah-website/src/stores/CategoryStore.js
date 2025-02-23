@@ -29,7 +29,16 @@ class CategoryStore {
       console.error("Failed to create category", error);
     }
   };
-
+  deleteCategory = async (categoryId) => {
+    try {
+      await instance.delete(`/category/delete/${categoryId}`);
+      this.categories = this.categories.filter(
+        (category) => category._id !== categoryId
+      );
+    } catch (error) {
+      console.error("Failed to delete category", error);
+    }
+  };
   filterCategories = (query) => {
     if (!query) {
       // If no query, show all categories

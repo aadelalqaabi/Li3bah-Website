@@ -448,9 +448,9 @@ const styles = {
     borderCollapse: "collapse",
   },
   imagePreview: {
-    width: "50px",
-    height: "50px",
-    objectFit: "cover",
+    width: "150px",
+    height: "150px",
+    objectFit: "contin",
     cursor: "pointer",
   },
   editButton: {
