@@ -11,13 +11,16 @@ const CreateCategory = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [editData, setEditData] = useState(null);
   const [isLoading, setIsLoading] = useState(false); // Loading state
-
+  const [audioFiles, setAudioFiles] = useState([]);
   const [questionImages, setQuestionImages] = useState([]);
   const [answerImages, setAnswerImages] = useState([]);
 
   useEffect(() => {
     CategoryStore.fetchCategories();
   }, []);
+  const handleAudioChange = (e) => {
+    setAudioFiles(e.target.files);
+  };
 
   const handleExcelChange = (e) => {
     const file = e.target.files[0];
@@ -68,6 +71,15 @@ const CreateCategory = () => {
         return imgQuestionNumber === questionNumber && img.name.includes("_A");
       });
 
+      // Find audio file
+      const audioFile = Array.from(audioFiles).find((audio) => {
+        const audioParts = audio.name.split("_");
+        const audioQuestionNumber = parseInt(audioParts[0], 10);
+        return (
+          audioQuestionNumber === questionNumber && audio.name.includes("_S")
+        );
+      });
+
       return {
         id: index,
         questionText,
@@ -76,6 +88,7 @@ const CreateCategory = () => {
         free,
         imageAsk: imageAsk || null,
         imageAnswer: imageAnswer || null,
+        audio: audioFile || null,
       };
     });
 
@@ -105,7 +118,9 @@ const CreateCategory = () => {
       if (item.imageAnswer) {
         formData.append("imageAnswer", item.imageAnswer, item.imageAnswer.name);
       }
-
+      if (item.audio) {
+        formData.append("audio", item.audio, item.audio.name);
+      }
       try {
         const result = await questionStore.createQuestion(formData, categoryID);
 
@@ -226,7 +241,16 @@ const CreateCategory = () => {
           onChange={handleAnswerImageChange}
         />
       </div>
-
+      <div style={styles.inputGroup}>
+        <h3 style={styles.label}>Upload Audio Files</h3>
+        <input
+          style={styles.fileInput}
+          type="file"
+          accept="audio/*"
+          multiple
+          onChange={handleAudioChange}
+        />
+      </div>
       <div style={styles.inputGroup}>
         <button style={styles.button} onClick={matchImagesToQuestions}>
           Match Data
@@ -237,56 +261,73 @@ const CreateCategory = () => {
         <table style={styles.table}>
           <thead>
             <tr>
+              <th>#</th>
               <th>Question</th>
               <th>Answer</th>
               <th>Points</th>
               <th>Free</th>
               <th>Question Image</th>
               <th>Answer Image</th>
+              <th>Audio</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {matchedData.map((item, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>{item.questionText}</td>
-                <td>{item.answerText}</td>
-                <td>{item.points}</td>
-                <td>{item.free ? "Yes" : "No"}</td>
-                <td>
-                  {item.imageAsk ? (
-                    <img
-                      src={URL.createObjectURL(item.imageAsk)}
-                      alt="question"
-                      style={styles.imagePreview}
-                      onClick={() => handleImageClick(item.imageAsk)}
-                    />
-                  ) : (
-                    "No Image"
-                  )}
-                </td>
-                <td>
-                  {item.imageAnswer ? (
-                    <img
-                      src={URL.createObjectURL(item.imageAnswer)}
-                      alt="answer"
-                      style={styles.imagePreview}
-                      onClick={() => handleImageClick(item.imageAnswer)}
-                    />
-                  ) : (
-                    "No Image"
-                  )}
-                </td>
-                <td>
-                  <button
-                    style={styles.editButton}
-                    onClick={() => handleEditClick(item)}
-                  >
-                    Edit
-                  </button>
-                </td>
-              </tr>
+              <React.Fragment key={index}>
+                <tr>
+                  <td>{index + 1}</td>
+                  <td>{item.questionText}</td>
+                  <td>{item.answerText}</td>
+                  <td>{item.points}</td>
+                  <td>{item.free ? "Yes" : "No"}</td>
+                  <td>
+                    {item.imageAsk ? (
+                      <img
+                        src={URL.createObjectURL(item.imageAsk)}
+                        alt="question"
+                        style={styles.imagePreview}
+                        onClick={() => handleImageClick(item.imageAsk)}
+                      />
+                    ) : (
+                      "No Image"
+                    )}
+                  </td>
+                  <td>
+                    {item.imageAnswer ? (
+                      <img
+                        src={URL.createObjectURL(item.imageAnswer)}
+                        alt="answer"
+                        style={styles.imagePreview}
+                        onClick={() => handleImageClick(item.imageAnswer)}
+                      />
+                    ) : (
+                      "No Image"
+                    )}
+                  </td>
+                  <td>
+                    {item.audio ? (
+                      <audio controls style={{ width: "150px" }}>
+                        <source src={URL.createObjectURL(item.audio)} />
+                      </audio>
+                    ) : (
+                      "No Audio"
+                    )}
+                  </td>
+                  <td>
+                    <button
+                      style={styles.editButton}
+                      onClick={() => handleEditClick(item)}
+                    >
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td colSpan="9" style={styles.separator}></td>{" "}
+                  {/* Separator row */}
+                </tr>
+              </React.Fragment>
             ))}
           </tbody>
         </table>
@@ -441,6 +482,11 @@ const styles = {
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
+  },
+  separator: {
+    height: "1px",
+    backgroundColor: "#ddd", // Light grey separator line
+    margin: "5px 0",
   },
   table: {
     width: "100%",
